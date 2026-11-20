@@ -1,0 +1,10 @@
+# Author: Claude (Anthropic)
+# SPDX-License-Identifier: Unlicense
+
+# build output
+build/
+
+# local developer files
+run-mcp.sh
+askhttp.theia-workspace
+CMakeUserPresets.json
