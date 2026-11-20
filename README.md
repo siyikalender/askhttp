@@ -231,9 +231,10 @@ The end-to-end tests use port `ASKHTTP_TEST_PORT`, which defaults to 18089.
 
 ## License
 
-Released into the public domain under the Unlicense (see `LICENSE`).
+Released into the public domain under the Unlicense (see
+`LICENSE-Unlicense`).
 
 Exception: `server.hpp` is based on the Boost.Beast examples and remains
-under the Boost Software License 1.0.
+under the Boost Software License 1.0 (see `LICENSE-BSL-1.0`).
 
 See the header of each file for its authors.
