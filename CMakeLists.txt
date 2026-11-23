@@ -17,33 +17,15 @@ endif()
 option(ASKHTTP_BUILD_TESTS "Build the Boost.Test runner" ${PROJECT_IS_TOP_LEVEL})
 option(ASKHTTP_BUILD_EXAMPLES "Build the examples (examples/)" ${PROJECT_IS_TOP_LEVEL})
 option(ASKHTTP_COMPILE_BOOST_JSON "Compile Boost.JSON into the library (json_impl.cpp)" ON)
-set(ASKHTTP_EXTRA_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../../include"
-  CACHE STRING "Additional include directories")
-set(ASKHTTP_EXTRA_LIBRARY_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../../../lib"
-  CACHE STRING "Additional library directories (tests, example)")
-
-set(_askhttp_extra_include_dirs "")
-foreach(_dir IN LISTS ASKHTTP_EXTRA_INCLUDE_DIRS)
-  if(IS_DIRECTORY "${_dir}")
-    list(APPEND _askhttp_extra_include_dirs "${_dir}")
-  endif()
-endforeach()
-
-set(_askhttp_extra_library_dirs "")
-foreach(_dir IN LISTS ASKHTTP_EXTRA_LIBRARY_DIRS)
-  if(IS_DIRECTORY "${_dir}")
-    list(APPEND _askhttp_extra_library_dirs "${_dir}")
-  endif()
-endforeach()
 
 find_package(Threads REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Boost 1.75 CONFIG QUIET)
 if(NOT TARGET Boost::headers)
-  find_path(ASKHTTP_BOOST_INCLUDE_DIR boost/version.hpp HINTS ${_askhttp_extra_include_dirs})
+  find_path(ASKHTTP_BOOST_INCLUDE_DIR boost/version.hpp)
   if(NOT ASKHTTP_BOOST_INCLUDE_DIR)
     message(FATAL_ERROR
-      "Boost >= 1.75 not found: set CMAKE_PREFIX_PATH or ASKHTTP_EXTRA_INCLUDE_DIRS")
+      "Boost >= 1.75 not found: set CMAKE_PREFIX_PATH or ASKHTTP_BOOST_INCLUDE_DIR")
   endif()
   add_library(Boost::headers INTERFACE IMPORTED)
   target_include_directories(Boost::headers INTERFACE "${ASKHTTP_BOOST_INCLUDE_DIR}")
@@ -80,10 +62,7 @@ if(ASKHTTP_COMPILE_BOOST_JSON)
 endif()
 add_library(askhttp::askhttp ALIAS askhttp)
 target_compile_features(askhttp PUBLIC cxx_std_20)
-target_include_directories(askhttp PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}"
-  ${_askhttp_extra_include_dirs}
-)
+target_include_directories(askhttp PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(askhttp PUBLIC
   Boost::headers
   OpenSSL::SSL
@@ -105,7 +84,6 @@ if(ASKHTTP_BUILD_TESTS)
     tests/test_uri.cpp
   )
   target_link_libraries(askhttp_tests PRIVATE askhttp::askhttp)
-  target_link_directories(askhttp_tests PRIVATE ${_askhttp_extra_library_dirs})
   askhttp_common_options(askhttp_tests)
   # One CTest entry: the end-to-end suites share ASKHTTP_TEST_PORT, so they
   # must not run in parallel under "ctest -j".
@@ -115,12 +93,10 @@ endif()
 if(ASKHTTP_BUILD_EXAMPLES)
   add_executable(mcp_example examples/mcp_server/main.cpp)
   target_link_libraries(mcp_example PRIVATE askhttp::askhttp)
-  target_link_directories(mcp_example PRIVATE ${_askhttp_extra_library_dirs})
   askhttp_common_options(mcp_example)
 
   add_executable(static_example examples/static_site/main.cpp)
   target_link_libraries(static_example PRIVATE askhttp::askhttp)
-  target_link_directories(static_example PRIVATE ${_askhttp_extra_library_dirs})
   target_compile_definitions(static_example PRIVATE
     STATIC_EXAMPLE_WWW_DIR="${CMAKE_CURRENT_SOURCE_DIR}/examples/static_site/www")
   askhttp_common_options(static_example)

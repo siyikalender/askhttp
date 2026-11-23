@@ -83,17 +83,10 @@ the server. The library has providers for:
 - Boost 1.75 or newer (header-only parts: Beast/Asio, JSON, Test, Optional)
 - OpenSSL (`libssl`, `libcrypto`)
 
-Paths are set with these cache variables (defaults are relative to this
-directory):
-
-| Variable | Default | Purpose |
-|---|---|---|
-| `ASKHTTP_EXTRA_INCLUDE_DIRS` | `../../include` | Additional include directories (used if they exist) |
-| `ASKHTTP_EXTRA_LIBRARY_DIRS` | `../../../lib` | Library search path for tests and the example (used if it exists) |
-
 Boost and OpenSSL are found with `find_package`. If Boost has no CMake
-package, its headers are searched in `ASKHTTP_EXTRA_INCLUDE_DIRS`. For a
-non-standard location set `CMAKE_PREFIX_PATH` / `OPENSSL_ROOT_DIR`.
+package, `boost/version.hpp` is searched in the standard include paths and
+under `CMAKE_PREFIX_PATH`. You can also set `ASKHTTP_BOOST_INCLUDE_DIR`
+directly. For a non-standard OpenSSL location set `OPENSSL_ROOT_DIR`.
 
 ## Building
 
