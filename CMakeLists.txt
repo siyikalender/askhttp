@@ -40,8 +40,19 @@ function(askhttp_common_options tgt)
 endfunction()
 
 add_library(askhttp STATIC
+  file_format.cpp
   json_escape.cpp
+  json_fields.cpp
+  json_rpc.cpp
+  json_writer.cpp
+  log.cpp
+  mcp.cpp
+  mime_type.cpp
   parse_uri.cpp
+  provider.cpp
+  query.cpp
+  server.cpp
+  string_view.cpp
   file_format.hpp
   json_escape.hpp
   json_fields.hpp
@@ -55,6 +66,7 @@ add_library(askhttp STATIC
   query.hpp
   read_stream.hpp
   server.hpp
+  server_session.hpp
   string_view.hpp
 )
 if(ASKHTTP_COMPILE_BOOST_JSON)
@@ -76,6 +88,7 @@ if(ASKHTTP_BUILD_TESTS)
   add_executable(askhttp_tests
     tests/main.cpp
     tests/test_file_upload.cpp
+    tests/test_include_order.cpp
     tests/test_json.cpp
     tests/test_logging.cpp
     tests/test_mcp_endpoint.cpp

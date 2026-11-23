@@ -19,6 +19,7 @@
 
 #include "json_fields.hpp"
 #include "json_writer.hpp"
+#include "mime_type.hpp"
 #include "provider.hpp"
 
 namespace

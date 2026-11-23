@@ -21,7 +21,6 @@
 #ifndef ASKHTTP_FILE_FORMAT_HPP
 #define ASKHTTP_FILE_FORMAT_HPP
 
-#include <algorithm>
 #include <functional>
 #include <string>
 #include <string_view>
@@ -47,10 +46,7 @@ struct file_format
   // any length, including empty ones, are passed to it.
   std::function<bool(std::string_view data)> matches;
 
-  bool has_extension(std::string_view p_ext) const
-  {
-    return std::find(extensions.begin(), extensions.end(), p_ext) != extensions.end();
-  }
+  bool has_extension(std::string_view p_ext) const;
 
   // Built-in formats
   static const file_format pdf;
@@ -75,83 +71,37 @@ struct file_format
 namespace detail
 {
 
-inline bool starts_with(std::string_view data, std::string_view prefix)
-{
-  return data.substr(0, prefix.size()) == prefix;
-}
-
-inline bool is_zip(std::string_view d)
-{
-  return starts_with(d, std::string_view("PK\x03\x04", 4));
-}
-
-inline bool is_ole(std::string_view d)
-{
-  return starts_with(d, std::string_view("\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1", 8));
-}
-
-// SVG is XML text: after an optional BOM, white space, XML declaration,
-// comments and DOCTYPE, the first element must be <svg.
-inline bool is_svg(std::string_view d)
-{
-  if (starts_with(d, "\xEF\xBB\xBF"))
-    d.remove_prefix(3);
-
-  for (int guard = 0; guard < 64; ++guard)
-  {
-    auto const first = d.find_first_not_of(" \t\r\n");
-    if (first == std::string_view::npos)
-      return false;
-    d.remove_prefix(first);
-
-    if (starts_with(d, "<?") || starts_with(d, "<!DOCTYPE") || starts_with(d, "<!--"))
-    {
-      auto const end = starts_with(d, "<!--") ? d.find("-->") : d.find('>');
-      if (end == std::string_view::npos)
-        return false;
-      d.remove_prefix(end + (starts_with(d, "<!--") ? 3 : 1));
-      continue;
-    }
-
-    return starts_with(d, "<svg") &&
-           d.size() > 4 && std::string_view(" \t\r\n>/").find(d[4]) != std::string_view::npos;
-  }
-
-  return false;
-}
+// Content checks of the built-in formats.
+bool match_pdf (std::string_view d);
+bool match_png (std::string_view d);
+bool match_jpeg(std::string_view d);
+bool match_gif (std::string_view d);
+bool match_webp(std::string_view d);
+bool match_bmp (std::string_view d);
+bool match_tiff(std::string_view d);
+bool match_svg (std::string_view d);
+bool is_zip    (std::string_view d);
+bool is_ole    (std::string_view d);
 
 } // namespace detail
 
-// PDF readers accept the header anywhere in the first 1024 bytes.
-inline const file_format file_format::pdf{"pdf", {"pdf"}, "application/pdf", true,
-  [](std::string_view d) { return d.substr(0, 1024).find("%PDF-") != std::string_view::npos; }};
+inline const file_format file_format::pdf{"pdf", {"pdf"}, "application/pdf", true, detail::match_pdf};
 
-inline const file_format file_format::png{"png", {"png"}, "image/png", true,
-  [](std::string_view d) { return detail::starts_with(d, "\x89PNG\r\n\x1A\n"); }};
+inline const file_format file_format::png{"png", {"png"}, "image/png", true, detail::match_png};
 
-inline const file_format file_format::jpeg{"jpeg", {"jpg", "jpeg", "jpe"}, "image/jpeg", true,
-  [](std::string_view d) { return detail::starts_with(d, "\xFF\xD8\xFF"); }};
+inline const file_format file_format::jpeg{"jpeg", {"jpg", "jpeg", "jpe"}, "image/jpeg", true, detail::match_jpeg};
 
-inline const file_format file_format::gif{"gif", {"gif"}, "image/gif", true,
-  [](std::string_view d) { return detail::starts_with(d, "GIF87a") || detail::starts_with(d, "GIF89a"); }};
+inline const file_format file_format::gif{"gif", {"gif"}, "image/gif", true, detail::match_gif};
 
-inline const file_format file_format::webp{"webp", {"webp"}, "image/webp", true,
-  [](std::string_view d) { return d.size() >= 12 && detail::starts_with(d, "RIFF") && d.substr(8, 4) == "WEBP"; }};
+inline const file_format file_format::webp{"webp", {"webp"}, "image/webp", true, detail::match_webp};
 
-inline const file_format file_format::bmp{"bmp", {"bmp"}, "image/bmp", true,
-  [](std::string_view d) { return d.size() >= 26 && detail::starts_with(d, "BM"); }};
+inline const file_format file_format::bmp{"bmp", {"bmp"}, "image/bmp", true, detail::match_bmp};
 
-inline const file_format file_format::tiff{"tiff", {"tif", "tiff"}, "image/tiff", false,
-  [](std::string_view d)
-  {
-    return detail::starts_with(d, std::string_view("II*\0", 4)) ||
-           detail::starts_with(d, std::string_view("MM\0*", 4));
-  }};
+inline const file_format file_format::tiff{"tiff", {"tif", "tiff"}, "image/tiff", false, detail::match_tiff};
 
 // Not inline_safe: an SVG can contain script, which would run on this
 // server's origin if the browser displayed the file.
-inline const file_format file_format::svg{"svg", {"svg"}, "image/svg+xml", false,
-  [](std::string_view d) { return detail::is_svg(d); }};
+inline const file_format file_format::svg{"svg", {"svg"}, "image/svg+xml", false, detail::match_svg};
 
 // ZIP-based office formats are recognised by the ZIP signature only; any
 // ZIP file with one of these extensions passes.

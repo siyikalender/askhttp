@@ -23,10 +23,7 @@ using string_view = boost::beast::string_view;
 // Copies the viewed characters into a std::string.
 // Also use this when a NUL-terminated string is needed: string_view::data()
 // does not guarantee a terminating NUL.
-inline std::string to_std_string(string_view sv)
-{
-  return std::string(sv.data(), sv.size());
-}
+std::string to_std_string(string_view sv);
 
 // ASKHTTP_STRING_VIEW_HPP
 #endif

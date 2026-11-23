@@ -4,7 +4,9 @@
 # libaskhttp
 
 A small C++20 library for building HTTP(S) backends on Boost.Beast. It is
-built as a static library (`libaskhttp.a`). Most of it is header-only.
+built as a static library (`libaskhttp.a`). The public headers contain the
+declarations and the API documentation. The implementation is compiled into
+`libaskhttp.a`, so applications that include the headers build quickly.
 
 An application registers **response providers** under URL paths and starts
 the server. The library has providers for:
@@ -57,18 +59,19 @@ the server. The library has providers for:
 
 | File | Contents |
 |---|---|
-| `server.hpp` | Sessions, listener, `start_server()` / `start_ssl_server()`, `server_control`, `authorizer` |
-| `provider.hpp` | `response_provider` base class; `text`, `file`, `json_rpc`, `upload`, `download` providers; `response_map`, `add()` |
-| `mcp.hpp` | `mcp_provider`, `mcp_options`, `mcp_tool` |
-| `json_rpc.hpp` | `rpc_error`, `rpc_handler`, error codes |
-| `file_format.hpp` | Built-in upload formats (PDF, images, Office, OpenDocument, ...) |
-| `json_fields.hpp` | Field access in request parameters: `find_field()`, `get_field()`, `get_required_field()`, `to_text()` |
-| `json_writer.hpp` | `std::string& operator<<` overloads for building JSON text, `make_result()` |
-| `json_escape.*` | `json_escape()`: JSON string escaping |
-| `log.hpp` | `log_error/warning/info/debug`, `set_log_sink()`, `set_log_level()` |
-| `parse_uri.*`, `query.hpp` | Splits a request target into a path and decoded query parameters; `get_param()` |
-| `read_stream.hpp` | `read_whole_stream()` |
-| `mime_type.hpp`, `string_view.hpp` | Small helpers |
+| `server.hpp/.cpp` | Public server API: `start_server()` / `start_ssl_server()`, `server_control`, `request_info`, `authorizer` |
+| `server_session.hpp` | Sessions and listener; internal header used by `server.cpp` and the tests. Applications do not include it |
+| `provider.hpp/.cpp` | `response_provider` base class; `text`, `file`, `json_rpc`, `upload`, `download` providers; `response_map`, `add()` |
+| `mcp.hpp/.cpp` | `mcp_provider`, `mcp_options`, `mcp_tool` |
+| `json_rpc.hpp/.cpp` | `rpc_error`, `rpc_handler`, error codes |
+| `file_format.hpp/.cpp` | Built-in upload formats (PDF, images, Office, OpenDocument, ...) |
+| `json_fields.hpp/.cpp` | Field access in request parameters: `find_field()`, `get_field()`, `get_required_field()`, `to_text()` |
+| `json_writer.hpp/.cpp` | `std::string& operator<<` overloads for building JSON text, `make_result()` |
+| `json_escape.hpp/.cpp` | `json_escape()`: JSON string escaping |
+| `log.hpp/.cpp` | `log_error/warning/info/debug`, `set_log_sink()`, `set_log_level()` |
+| `parse_uri.hpp/.cpp`, `query.hpp/.cpp` | Splits a request target into a path and decoded query parameters; `get_param()` |
+| `read_stream.hpp` | `read_whole_stream()` (template, header only) |
+| `mime_type.hpp/.cpp`, `string_view.hpp/.cpp` | Small helpers |
 | `json_impl.cpp` | Compiles Boost.JSON (header-only mode) into the library |
 | `CMakeLists.txt` | Build: library, tests, examples |
 | `CMakePresets.json` | `debug` and `release` presets |
@@ -184,6 +187,7 @@ ctest --preset debug                                          # unit and end-to-
 | `mcp_endpoint` | `tests/test_mcp_endpoint.cpp` | MCP protocol, legacy revisions, header checks |
 | `file_upload` | `tests/test_file_upload.cpp` | Upload and download providers, file formats |
 | `logging` | `tests/test_logging.cpp` | Log levels, sinks, escaping |
+| `include_order` | `tests/test_include_order.cpp` | Public headers compile in any order (`mcp.hpp` before `server.hpp`) |
 
 The end-to-end tests use port `ASKHTTP_TEST_PORT`, which defaults to 18089.
 
@@ -206,8 +210,8 @@ The end-to-end tests use port `ASKHTTP_TEST_PORT`, which defaults to 18089.
   A file with a single author uses `Author:`. Use `#` comments in shell
   scripts, `CMakeLists.txt` and `.gitignore`, and `<!-- ... -->` in
   Markdown. JSON files (`CMakePresets.json`) have no header, because JSON
-  has no comments. Upstream notices (`server.hpp`) stay first and
-  unchanged.
+  has no comments. Upstream notices (`server.hpp`, `server.cpp`,
+  `server_session.hpp`) stay first and unchanged.
 - **Include guards:** `ASKHTTP_<FILENAME>_HPP`, closed with
   `#endif // ASKHTTP_<FILENAME>_HPP`.
 - **File names** say what is inside (`json_escape.hpp`, not
@@ -225,7 +229,8 @@ The end-to-end tests use port `ASKHTTP_TEST_PORT`, which defaults to 18089.
 Released into the public domain under the Unlicense (see
 `LICENSE-Unlicense`).
 
-Exception: `server.hpp` is based on the Boost.Beast examples and remains
-under the Boost Software License 1.0 (see `LICENSE-BSL-1.0`).
+Exception: `server.hpp`, `server.cpp` and `server_session.hpp` are based on
+the Boost.Beast examples and remain under the Boost Software License 1.0
+(see `LICENSE-BSL-1.0`).
 
 See the header of each file for its authors.

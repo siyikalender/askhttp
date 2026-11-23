@@ -11,7 +11,7 @@
 #ifndef ASKHTTP_READ_STREAM_HPP
 #define ASKHTTP_READ_STREAM_HPP
 
-#include <iostream>
+#include <istream>
 
 template<typename RandomAccessibleContainer>
 inline void read_whole_stream(std::istream &stream, RandomAccessibleContainer &content)

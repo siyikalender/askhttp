@@ -47,18 +47,12 @@ class rpc_error : public std::runtime_error
 public:
   explicit rpc_error(std::string         p_message,
                      int                 p_code = rpc_code::application_error,
-                     boost::json::value  p_data = nullptr)
-  : std::runtime_error(std::move(p_message))
-  , code_(p_code)
-  , data_(std::move(p_data))
-  {}
+                     boost::json::value  p_data = nullptr);
 
-  rpc_error(int p_code, std::string p_message, boost::json::value p_data = nullptr)
-  : rpc_error(std::move(p_message), p_code, std::move(p_data))
-  {}
+                     rpc_error(int p_code, std::string p_message, boost::json::value p_data = nullptr);
 
-  int                        code() const { return code_; }
-  const boost::json::value&  data() const { return data_; }
+                     int                        code() const;
+                     const boost::json::value&  data() const;
 
 private:
   int                 code_;
@@ -72,34 +66,14 @@ namespace detail
 {
 
 // {"jsonrpc":"2.0","id":<id>,"result":<result>}
-inline boost::json::object rpc_result(const boost::json::value& p_id, boost::json::value p_result)
-{
-  boost::json::object o;
-  o["jsonrpc"] = "2.0";
-  o["id"]      = p_id;
-  o["result"]  = std::move(p_result);
-  return o;
-}
+boost::json::object rpc_result(const boost::json::value& p_id, boost::json::value p_result);
 
 // {"jsonrpc":"2.0","id":<id>,"error":{"code":..,"message":..[,"data":..]}}
 // An id of JSON null is written as null (JSON-RPC: id unknown).
-inline boost::json::object rpc_error_response(const boost::json::value&  p_id,
-                                              int                        p_code,
-                                              const std::string&         p_message,
-                                              const boost::json::value&  p_data = nullptr)
-{
-  boost::json::object e;
-  e["code"]    = p_code;
-  e["message"] = p_message;
-  if (!p_data.is_null())
-    e["data"] = p_data;
-
-  boost::json::object o;
-  o["jsonrpc"] = "2.0";
-  o["id"]      = p_id;
-  o["error"]   = std::move(e);
-  return o;
-}
+boost::json::object rpc_error_response(const boost::json::value&  p_id,
+                                       int                        p_code,
+                                       const std::string&         p_message,
+                                       const boost::json::value&  p_data = nullptr);
 
 } // namespace detail
 

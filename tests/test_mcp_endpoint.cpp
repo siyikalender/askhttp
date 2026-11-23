@@ -12,6 +12,7 @@
 #include <type_traits>
 
 #include "server.hpp"
+#include "server_session.hpp"
 #include "mcp.hpp"
 
 namespace

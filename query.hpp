@@ -20,19 +20,8 @@
 using query = std::map<std::string, boost::optional<std::string>>;
 
 // Value of a parameter; an empty optional if it is missing or has no value.
-inline boost::optional<std::string>  get_param(const query         &p_query,
-                                               const std::string   &p_key)
-{
-  boost::optional<std::string> result;
-  
-  auto it = p_query.find(p_key);
-  if (it != p_query.end())
-  {
-    result = it->second;
-  }
-  
-  return result;
-}
+boost::optional<std::string>  get_param(const query         &p_query,
+                                        const std::string   &p_key);
 
 // ASKHTTP_QUERY_HPP
 #endif

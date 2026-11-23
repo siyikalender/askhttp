@@ -58,4 +58,13 @@ std::string json_escape(const std::string& p_input)
   }
   
   return result;
-}
+  }
+
+  boost::optional<std::string>
+  json_escape(const boost::optional<std::string>& p_value)
+  {
+  if (p_value)
+    return json_escape(*p_value);
+
+  return p_value;
+  }

@@ -3,8 +3,8 @@
 //
 // SPDX-License-Identifier: Unlicense
 //
-// Request handling (server.hpp) without a network: handle_request() is
-// called directly and the response is captured instead of being written.
+// Request handling (server_session.hpp) without a network: handle_request()
+// is called directly and the response is captured instead of being written.
 //
 
 #include <boost/test/unit_test.hpp>
@@ -15,6 +15,7 @@
 #include <type_traits>
 
 #include "server.hpp"
+#include "server_session.hpp"
 
 namespace
 {

@@ -19,14 +19,8 @@
 std::string json_escape(const std::string& p_input);
 
 // Optional overload: an empty value stays empty.
-inline boost::optional<std::string>
-json_escape(const boost::optional<std::string>& p_value)
-{
-  if (p_value)
-    return json_escape(*p_value);
-
-  return p_value;
-}
+boost::optional<std::string>
+json_escape(const boost::optional<std::string>& p_value);
 
 // ASKHTTP_JSON_ESCAPE_HPP
 #endif
