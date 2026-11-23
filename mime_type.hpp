@@ -10,12 +10,9 @@
 #ifndef ASKHTTP_MIME_TYPE_HPP
 #define ASKHTTP_MIME_TYPE_HPP
 
-#include <optional>
 #include <utility>
 
 #include <boost/beast/core/string.hpp>
-
-#include <haluj/pair_lookup.hpp>
 
 #include "string_view.hpp"
 
@@ -64,17 +61,11 @@ mime_type(string_view path)
     {".woff2" , "application/font-woff2"}
   };
 
-  auto r = haluj::to_second
-  (
-    ext,
-    mime_map,
-    [&](string_view a, string_view b)
-    {
-      return iequals(a, b);
-    }
-  );
+  for(auto const& entry : mime_map)
+    if(iequals(ext, entry.first))
+      return entry.second;
 
-  return (r) ? *r : "application/text";
+  return "application/text";
 }
 
 // ASKHTTP_MIME_TYPE_HPP

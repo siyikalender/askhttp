@@ -364,6 +364,16 @@ BOOST_AUTO_TEST_CASE(file_provider_content)
   set_log_sink({});
 
   std::remove(path.c_str());
-}
+  }
 
-BOOST_AUTO_TEST_SUITE_END()
+  // mime_type(): case-insensitive, first exact extension match, fallback
+  BOOST_AUTO_TEST_CASE(mime_type_lookup)
+  {
+  BOOST_CHECK_EQUAL(to_std_string(::mime_type("index.html")), "text/html");
+  BOOST_CHECK_EQUAL(to_std_string(::mime_type("A.PNG")), "image/png");
+  BOOST_CHECK_EQUAL(to_std_string(::mime_type("x.woff2")), "application/font-woff2");
+  BOOST_CHECK_EQUAL(to_std_string(::mime_type("archive.tar.gz")), "application/text");
+  BOOST_CHECK_EQUAL(to_std_string(::mime_type("noext")), "application/text");
+  }
+
+  BOOST_AUTO_TEST_SUITE_END()

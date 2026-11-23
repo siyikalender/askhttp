@@ -17,17 +17,10 @@ endif()
 option(ASKHTTP_BUILD_TESTS "Build the Boost.Test runner" ${PROJECT_IS_TOP_LEVEL})
 option(ASKHTTP_BUILD_EXAMPLES "Build the examples (examples/)" ${PROJECT_IS_TOP_LEVEL})
 option(ASKHTTP_COMPILE_BOOST_JSON "Compile Boost.JSON into the library (json_impl.cpp)" ON)
-set(ASKHTTP_HALUJ_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../framework/haluj/include"
-  CACHE PATH "haluj include directory")
 set(ASKHTTP_EXTRA_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../../include"
   CACHE STRING "Additional include directories")
 set(ASKHTTP_EXTRA_LIBRARY_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../../../lib"
   CACHE STRING "Additional library directories (tests, example)")
-
-if(NOT EXISTS "${ASKHTTP_HALUJ_INCLUDE_DIR}/haluj/pair_lookup.hpp")
-  message(FATAL_ERROR
-    "haluj not found in '${ASKHTTP_HALUJ_INCLUDE_DIR}': set ASKHTTP_HALUJ_INCLUDE_DIR")
-endif()
 
 set(_askhttp_extra_include_dirs "")
 foreach(_dir IN LISTS ASKHTTP_EXTRA_INCLUDE_DIRS)
@@ -89,7 +82,6 @@ add_library(askhttp::askhttp ALIAS askhttp)
 target_compile_features(askhttp PUBLIC cxx_std_20)
 target_include_directories(askhttp PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}"
-  "${ASKHTTP_HALUJ_INCLUDE_DIR}"
   ${_askhttp_extra_include_dirs}
 )
 target_link_libraries(askhttp PUBLIC

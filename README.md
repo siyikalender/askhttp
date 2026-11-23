@@ -82,14 +82,12 @@ the server. The library has providers for:
 - A C++20 compiler (GCC or Clang)
 - Boost 1.75 or newer (header-only parts: Beast/Asio, JSON, Test, Optional)
 - OpenSSL (`libssl`, `libcrypto`)
-- The `haluj` parser framework. It is used by `mime_type.hpp`.
 
 Paths are set with these cache variables (defaults are relative to this
 directory):
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `ASKHTTP_HALUJ_INCLUDE_DIR` | `../../framework/haluj/include` | haluj headers (required) |
 | `ASKHTTP_EXTRA_INCLUDE_DIRS` | `../../include` | Additional include directories (used if they exist) |
 | `ASKHTTP_EXTRA_LIBRARY_DIRS` | `../../../lib` | Library search path for tests and the example (used if it exists) |
 
